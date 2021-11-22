@@ -2,7 +2,7 @@ import numpy as np
 from .component import Component
 import svgpathtools as pt
 import random
-
+#testing
 class Particles(Component):
 
     def __init__(self, paths, attribs=None) -> None:
