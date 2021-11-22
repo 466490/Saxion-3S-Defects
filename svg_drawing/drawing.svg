@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="256"
+   height="256"
+   viewBox="0 0 67.73333 67.733335"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   sodipodi:docname="drawing.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.74118967"
+     inkscape:cx="139.64037"
+     inkscape:cy="265.11433"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     units="px"
+     viewbox-width="67.73333" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="base"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="display:inline;fill:none;stroke:#000000;stroke-width:0.159541"
+       id="rect31"
+       width="56.149513"
+       height="47.582199"
+       x="4.9450731"
+       y="9.5857038" />
+    <path
+       style="display:inline;fill:#666666;stroke:#000000;stroke-width:0.21525"
+       d="M 5.1515054,33.376801 V 9.8101446 H 33.01983 60.888154 V 33.376801 56.94346 H 33.01983 5.1515054 Z m 43.5571576,0 V 21.481251 H 33.639125 18.569587 v 11.89555 11.895552 h 15.069538 15.069538 z"
+       id="path292" />
+    <path
+       style="fill:#008000;stroke:#000000;stroke-width:0.21525"
+       d="M 5.3579384,33.376801 V 10.034588 H 33.01983 60.681722 V 33.376801 56.719014 H 33.01983 5.3579384 Z m 43.5571566,0 V 21.256807 h -15.27597 -15.27597 v 12.119994 12.119996 h 15.27597 15.27597 z"
+       id="path481" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="membrane">
+    <rect
+       style="fill:#808080;stroke:#000000;stroke-width:0.159541"
+       id="rect136"
+       width="29.726213"
+       height="23.342213"
+       x="18.77602"
+       y="21.705694" />
+  </g>
+</svg>
