@@ -39,7 +39,6 @@ class Particles(Component):
 
             for connect_points in pairs:
                 paths.append(pt.Line(connect_points[0],connect_points[1]))
-
             self.__defect_coords.append(pt.Path(*paths).bbox())
             self.__defective_points.append([pt.Path(*paths)])
 

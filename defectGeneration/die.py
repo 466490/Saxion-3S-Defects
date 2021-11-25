@@ -1,21 +1,16 @@
-import re
 import numpy as np
-from svgpathtools.path import translate
 from threading import Thread
 from .component import Component
-from svgpathtools import wsvg
+import svgpathtools as pt
 from wand.image import Image
 
-from .membrane import MembraneDefect
-from .particles import Particles
+from defectGeneration.membrane import MembraneDefect
+from defectGeneration.lparticles import LParticles
+from defectGeneration.particles import Particles
 import os
 from queue import Queue
-import time
 import copy
 import math
-
-from defectlib import membrane
-from defectlib import component
 import pandas as pd
 
 
@@ -61,7 +56,7 @@ class Die():
         all_paths = []
         all_atribs = []
         copied_components = copy.deepcopy(self._components)
-#
+        
         # for each_defect in defect_dict.keys():
         copied_components[comp].override_component(defect_dict[comp][id])
             # print(defect_dict[each_defect][id])
@@ -99,7 +94,7 @@ class Die():
                     worker.start()
         else:
             for i in range(n_images):
-                wsvg(paths=p, attributes=a, filename=folder_name + '.svg', dimensions=(width, height), viewbox=(v_minx, v_miny, abs(v_width) + abs(v_width), abs(v_height) + abs(v_height)))
+                pt.wsvg(paths=p, attributes=a, filename=folder_name + '.svg', dimensions=(width, height), viewbox=(v_minx, v_miny, abs(v_width) + abs(v_width), abs(v_height) + abs(v_height)))
                     # worker = Thread(target=self.__write_to_png, args=(self.svg_to_png_queue, folder_name))
                     # worker.setDaemon(True)
                     # self.svg_to_png_queue.put(each_defect + '_' + str(i))
@@ -107,7 +102,7 @@ class Die():
         self.svg_to_png_queue.join()
     
     def __write_to_svg(self, p, a, name, width, height, v_minx, v_miny, v_width, v_height, iter_):
-        wsvg(paths=p, attributes=a, filename=name + '.svg', dimensions=(width, height), viewbox=(v_minx, v_miny, (v_width), (v_height)))
+        pt.wsvg(paths=p, attributes=a, filename=name + '.svg', dimensions=(width, height), viewbox=(v_minx, v_miny, (v_width), (v_height)))
     
 
     def __write_to_png(self,svg_to_png_queue, folder_name):
@@ -181,10 +176,23 @@ class Die():
         return self.__defects_csv
         # getting defects..
 
-    def generate_particles(self, component, n, sigma_r, sigma_phi, amount):
-        die = Particles(self._components[component].return_paths())
-        die.polygon_points(n, sigma_r, sigma_phi, amount)
+    def generate_particles(self, layer, vertices, sigma_r, sigma_phi, amount):
+        die = Particles(self._components[layer].return_paths())
+        die.polygon_points(vertices, sigma_r, sigma_phi, amount)
+        self.add_component('particles', die.get_polygons()[0])
 
+        self._components['particles'].set_fill('black')
+        self._components['particles'].set_fill_opacity('1')
+        self._components['particles'].set_stroke_opacity(1)
+        self._components['particles'].set_stroke('black')
+
+        self.__generated_defects['particles'] = die.get_polygons()
+        
+        self.__particle_coords = die.get_coords()
+
+    def generate_lparticles(self, layer, vertices, sigma_r, sigma_phi, amount):
+        die = LParticles(self._components[layer].return_paths())
+        die.polygon_points(vertices, sigma_r, sigma_phi, amount)
         self.add_component('particles', die.get_polygons()[0])
 
         self._components['particles'].set_fill('black')
