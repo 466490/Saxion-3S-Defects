@@ -1,4 +1,6 @@
-/generated_images
+/output/csv
+/output/png
+/output/svg
 .vscode/
 /defectGeneration/__pycache__
 /defectGeneration/defectTypes/__pycache__
