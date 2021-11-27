@@ -22,7 +22,6 @@ class LParticles(Component):
             alpha = 360/n_polygon_points
             dividers = sorted(random.sample(range(1, 360), n_polygon_points - 1))
             alphaArray = [a - b for a, b in zip(dividers + [360], [0] + dividers)]
-            print(alphaArray)
 
             # rotation_matrix = np.matrix([[np.cos(alpha),-np.sin(alpha)], [np.sin(alpha),np.cos(alpha)]]) # might not be necessary?
 

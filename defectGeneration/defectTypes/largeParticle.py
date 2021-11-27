@@ -1,89 +1,77 @@
-import svgpathtools as pt
-from threading import Thread
+import shutil
 import numpy as np
 import random
+from xml.dom.minidom import parse
 
 
 class LargeParticle():
-    def __init__(self, srcImg, layer, vertices, sigma_r, sigma_phi, amount):
+    def __init__(self, srcImg, area, vertices, sigma_r, sigma_phi, layer="none"):
         self.srcImg = srcImg
         self.layer = layer
-        self.vertices = vertices
-        self.sigma_r  = sigma_r
-        self.sigma_phi = sigma_phi
-        self.amount = amount
+        self.points = []
 
-        self.__defect_coords = []
-        self.__defective_points = []
+        # Uniformly distributed
+        dividers = sorted(random.sample(range(1, 360), vertices - 1))
+        alphaArray = [a - b for a, b in zip(dividers + [360], [0] + dividers)]
 
-        self.generateDefect()
+        starting_x = random.uniform(area[0], area[2]+area[0]) # minX, maxX
+        starting_y = random.uniform(area[1], area[3]+area[1]) # minY, maxY
 
-    def generateDefect(self):
-        pairs = []
-        paths = []
-        max_x, max_y, min_x, min_y = 700, 700, -700, -950#self.bbox_full() # gets area of an object
-
-        alpha = 360/self.vertices
-
-        # rotation_matrix = np.matrix([[np.cos(alpha),-np.sin(alpha)], [np.sin(alpha),np.cos(alpha)]]) # might not be necessary?
-
-        starting_x = random.uniform(min_x, max_x)
-        starting_y = random.uniform(min_y, max_y)
-
-        size_of_bbox = complex(starting_x.real - starting_x.imag, starting_y.real - starting_y.imag)
-
-        orig = complex(starting_x, starting_y) - complex(random.uniform(self.sigma_r, self.sigma_phi * self.sigma_r), random.uniform(self.sigma_r, self.sigma_phi * self.sigma_r)) #origin point for rotations
+        #origin point for rotations
+        origin = complex(starting_x, starting_y) - complex(random.uniform(sigma_r, sigma_phi * sigma_r), 
+                                                         random.uniform(sigma_r, sigma_phi * sigma_r))
 
         point_start = complex(starting_x, starting_y)
+        self.points.append(point_start)
 
-        for points in range(self.vertices):
-            point_end = self.rotate(alpha, point_start, orig)
-            pairs.append((point_start, point_end))
-            point_start = self.rotate(alpha, point_start, orig)
-
-        for connect_points in pairs:
-            paths.append(pt.Line(connect_points[0],connect_points[1]))
-
-        self.__defect_coords.append(pt.Path(*paths).bbox())
-        self.__defective_points.append([pt.Path(*paths)])
-
+        for index in range(vertices):
+            point_end = self.rotate(alphaArray[index], point_start, origin)
+            self.points.append(point_end)
+            point_start = self.rotate(alphaArray[index], point_start, origin)
 
     def rotate(self, deg, point, origin):
         return np.exp(1j*np.radians(deg))*(point - origin) + origin
 
-    def get_coords(self):
-        return self.__defect_coords
+    def output_to_svg(self, directory):
+        #print(self.points)
+        shutil.copyfile(self.srcImg, directory + "particle.svg") # check if success
+        xmlDoc = parse(directory + "particle.svg")
 
-    def get_polygons(self):
-        return self.__defective_points
+        # Create defect xml element
+        defectElement = xmlDoc.createElement("path")
+        pointsStr = ""
+        for index, points in enumerate(self.points):
+            if index == 0:
+                pointsStr += "M " + str(points.real) + "," + str(points.imag)
+            else:
+                pointsStr += " L " + str(points.real) + "," + str(points.imag)
+        defectElement.setAttribute("d", pointsStr)
+        defectElement.setAttribute("style", "fill:black;fill-opacity:1;stroke:black;none;none")
 
-    def write_svg(self, folder_name='./generated_images/', n_images=1):
-        p, a = self.__get_data()
-
-        v_minx, v_miny, v_width, v_height = self.viewbox_dims()
-
-        width = self.__img_width
-        height = self.__img_height
-
-        if len(self.__generated_defects) >=1:
-
-            for each_defect in self.__generated_defects.keys(): #TODO does not support multiple type of defects on a single die yet..
-
-                for i in range(len(self.__generated_defects[each_defect])): # looks at the amount of generated defects... happens when .generate_membrane is called
-
-                    p_copy, a_copy = self.__get_adjusted_data(self.__generated_defects, each_defect, i)
-                    file_name = folder_name + each_defect + '_' + str(i)
-                    self.__write_to_svg(p_copy, a_copy, file_name, width, height, v_minx, v_miny, v_width, v_height, i)
-                
-                    worker = Thread(target=self.__write_to_png, args=(self.svg_to_png_queue, folder_name))
-                    worker.setDaemon(True)
-                    self.svg_to_png_queue.put(each_defect + '_' + str(i))
-                    worker.start()
+        if self.layer != "none":
+            # Find correct elements based on layer
+            for element in xmlDoc.getElementsByTagName("g"):
+                if element.getAttribute("inkscape:label") == self.layer:
+                    element.appendChild(defectElement)
         else:
-            for i in range(n_images):
-                pt.wsvg(paths=p, attributes=a, filename=folder_name + '.svg', dimensions=(width, height), viewbox=(v_minx, v_miny, abs(v_width) + abs(v_width), abs(v_height) + abs(v_height)))
-                    # worker = Thread(target=self.__write_to_png, args=(self.svg_to_png_queue, folder_name))
-                    # worker.setDaemon(True)
-                    # self.svg_to_png_queue.put(each_defect + '_' + str(i))
-                    # worker.start()
-        self.svg_to_png_queue.join()
+            # Put defect on top of everything
+            xmlDoc.firstChild.appendChild(defectElement)
+
+        # Write the changed xml file to disk
+        with open(directory + "particle.svg", "w") as file:
+            file.write(xmlDoc.toxml())
+            file.close()
+
+    def get_boundingbox(self):
+        max_x, max_y = -10e6, -10e6
+        min_x, min_y = 10e6, 10e6
+        for point in self.points:
+            if point.real > max_x:
+                max_x = point.real
+            if point.real < min_x:
+                min_x = point.real
+            if point.imag > max_y:
+                max_y = point.imag
+            if point.imag < min_y:
+                min_y = point.imag
+        return (min_x, min_y, max_x, max_y)

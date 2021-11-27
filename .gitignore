@@ -1,3 +1,6 @@
 /generated_images
+.vscode/
+/defectGeneration/__pycache__
+/defectGeneration/defectTypes/__pycache__
 membrane.csv
 particles.csv

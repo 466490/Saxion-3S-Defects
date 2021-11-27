@@ -181,6 +181,8 @@ class Die():
         die.polygon_points(vertices, sigma_r, sigma_phi, amount)
         self.add_component('particles', die.get_polygons()[0])
 
+        print(self._components['particles'])
+
         self._components['particles'].set_fill('black')
         self._components['particles'].set_fill_opacity('1')
         self._components['particles'].set_stroke_opacity(1)
