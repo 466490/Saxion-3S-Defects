@@ -10,12 +10,12 @@ from xml.dom.minidom import parse
 class LargeParticle():
     def __init__(self, srcImg, area, 
                  vertices_mean, vertices_stddev, 
-                 size_mean, size_stddev, 
-                 distance_mean, distance_stddev, 
-                 angle_mean, angle_stddev, 
-                 layer="none"):
+                 size_mean, size_stddev,
+                 angle_variance, blur_stddev=1, 
+                 curviness=4, layer="none"):
         self.srcImg = srcImg
         self.layer = layer
+        self.blur_stddev = blur_stddev
         self.points = []
         self._svgDir = ""
         self._svgFilename = ""
@@ -27,19 +27,20 @@ class LargeParticle():
         middle = complex(random.uniform(area[0], area[2]+area[0]), 
                          random.uniform(area[1], area[3]+area[1]))
 
-        # Starting point is always to the top left of starting point
+        """# Starting point is always to the top left of starting point
         point_start = complex(middle.real, middle.imag) + complex(np.random.normal(size_mean, size_stddev), 
-                                                                  np.random.normal(size_mean, size_stddev))
+                                                                  np.random.normal(size_mean, size_stddev))"""
+        point_start = np.random.normal(size_mean, size_stddev) * np.exp(1j*random.uniform(0, 2*math.pi)) + middle
 
         self.points.append(point_start)
 
         for index in range(vertices-1):
-            point_end = self.rotate(distance_mean, distance_stddev, angle_mean, angle_stddev, point_start, middle)
+            point_end = self.dev_rotate(size_mean, size_stddev, angle_variance, vertices, point_start, middle)
             self.points.append(point_end)
-            point_start = self.rotate(distance_mean, distance_stddev, angle_mean, angle_stddev, point_start, middle)
+            point_start = self.dev_rotate(size_mean, size_stddev, angle_variance, vertices, point_start, middle)
         
         # Generate the posititon of the control points necessary for the CubicBezier curves
-        controlpoints = self._generate_control_points_pairs(self.points, 4)
+        controlpoints = self._generate_control_points_pairs(self.points, curviness)
         
         self.bezier_segments = []
         # Create the CubicBezier curves based on the vertices and the control points
@@ -48,9 +49,10 @@ class LargeParticle():
             next = 0 if index == len(self.points)-1 else index+1
             self.bezier_segments.append(svgpt.CubicBezier(self.points[index], controlpoints[index][1],controlpoints[next][0], self.points[next]))
 
-    def rotate(self, distance_mean, distance_stddev, angle_mean, angle_stddev, previous_point, middle):
-        deg = np.random.normal(angle_mean, angle_stddev)
-        return np.random.normal(distance_mean, distance_stddev) * np.exp(1j*np.radians(deg))*(previous_point - middle) + middle
+    def dev_rotate(self, distance_mean, distance_stddev, angle_variance, vertices, previous_point, middle):
+        deg = np.random.normal(360/vertices, 360/(angle_variance*vertices))
+        previous_deg = np.angle(previous_point-middle)
+        return np.random.normal(distance_mean, distance_stddev) * np.exp(1j*(np.radians(deg)+previous_deg)) + middle
     
     def get_boundingbox(self):
         x_max, y_max = -10e6, -10e6
@@ -74,20 +76,32 @@ class LargeParticle():
         except Exception:
             print("The input SVG image is not found or the output directory does not exist")
             return
+        
+        # Create the filter element as a <filter>
+        filter_xml_element = xmlDoc.createElement("filter")
+        filter_xml_element.setAttribute("id", "blur_filter")
+
+        # Create the Gaussian blur element as a <feGaussianBlur> tag
+        blur_xml_element = xmlDoc.createElement("feGaussianBlur")
+        blur_xml_element.setAttribute("stdDeviation", str(self.blur_stddev))
+        filter_xml_element.appendChild(blur_xml_element)
+        xmlDoc.firstChild.appendChild(filter_xml_element)
 
         # Create the XML element as a <path> tag
-        defectXmlElement = xmlDoc.createElement("path")
-        defectXmlElement.setAttribute("d", svgpt.Path(*self.bezier_segments).d())
-        defectXmlElement.setAttribute("style", "fill:black;fill-opacity:1;stroke:black;none;none")
+        defect_xml_element = xmlDoc.createElement("path")
+        defect_xml_element.setAttribute("filter", "url(#blur_filter)")
+        defect_xml_element.setAttribute("d", svgpt.Path(*self.bezier_segments).d())
+        defect_xml_element.setAttribute("style", "fill:black;fill-opacity:1;stroke:black;none;none")
+
 
         if self.layer != "none":
             # Find correct elements based on layer
             for element in xmlDoc.getElementsByTagName("g"):
                 if element.getAttribute("inkscape:label") == self.layer:
-                    element.appendChild(defectXmlElement)
+                    element.appendChild(defect_xml_element)
         else:
             # Put defect on top of everything
-            xmlDoc.firstChild.appendChild(defectXmlElement)
+            xmlDoc.firstChild.appendChild(defect_xml_element)
 
         # Write the changed xml file to disk
         with open(svg_out_dir+self._svgFilename, "w") as file:
@@ -99,22 +113,26 @@ class LargeParticle():
         if self._svgFilename == "":
             self.output_to_svg()
         try:
+            data_line = "large_particle,"+csv_out_dir+self._svgFilename.replace("svg", "png")+",%.2f,%.2f,%.2f,%.2f"%self.get_boundingbox()+"\n"
             if os.path.exists(csv_out_dir + "large_particle.csv"):
                 with open(csv_out_dir + "large_particle.csv", "a") as file:
-                    file.write("large_particle," + csv_out_dir+self._svgFilename.replace("svg", "png")+",%.2f,%.2f,%.2f,%.2f" % self.get_boundingbox()+"\n")
+                    file.write(data_line)
             else:
                 with open(csv_out_dir + "large_particle.csv", "w") as file:
                     file.write("class,filename,xmin,ymin,xmax,ymax\n")
-                    file.write("large_particle," + csv_out_dir+self._svgFilename.replace("svg", "png")+",%.2f,%.2f,%.2f,%.2f" % self.get_boundingbox()+"\n")
+                    file.write(data_line)
         except Exception:
             print("Was unable to save the defect to the csv file")
 
-    def output_to_png(self, png_out_dir="output/png/"):
+    def output_to_png(self, png_out_dir="output/png/", with_bbox=False):
         if self._svgFilename == "":
             self.output_to_svg()
         try:
-            with Image(filename=self._svgDir+self._svgFilename) as svgImg:
-                png_image = svgImg.make_blob("png32")
+            if with_bbox:
+                pass #TODO
+            else:
+                with Image(filename=self._svgDir+self._svgFilename) as svgImg:
+                    png_image = svgImg.make_blob("png32")
 
             with open(png_out_dir+self._svgFilename.replace("svg", "png"), "wb") as out:
                 out.write(png_image)
@@ -149,15 +167,12 @@ class LargeParticle():
     def _find_available_filename(self, search_dir, filename):
         #Runs in log(n) time where n is the number of existing files in sequence
         index = 1
-        # First do an exponential search
-        while os.path.exists(search_dir+filename % index):
+        while os.path.exists(search_dir + filename % index):
             index *= 2
 
-        # Result lies somewhere in the interval (i/2..i]
-        # We call this interval (a..b] and narrow it down until a + 1 = b
         interval_begin, interval_end = (index // 2, index)
         while interval_begin + 1 < interval_end:
-            midpoint = (interval_begin + interval_end) // 2 # interval midpoint
+            midpoint = (interval_begin + interval_end) // 2
             interval_begin, interval_end = (midpoint, interval_end) if os.path.exists(search_dir+filename % midpoint) else (interval_begin, midpoint)
 
         return filename % interval_end

@@ -3,3 +3,4 @@
 Packages required:
     - numpy
     - wand (py-wand or any other python binding)
+    - svgpathtools
