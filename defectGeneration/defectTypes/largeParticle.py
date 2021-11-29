@@ -8,33 +8,38 @@ from wand.image import Image
 from xml.dom.minidom import parse
 
 class LargeParticle():
-    def __init__(self, srcImg, area, vertices, sigma_r, sigma_phi, layer="none"):
+    def __init__(self, srcImg, area, 
+                 vertices_mean, vertices_stddev, 
+                 size_mean, size_stddev, 
+                 distance_mean, distance_stddev, 
+                 angle_mean, angle_stddev, 
+                 layer="none"):
         self.srcImg = srcImg
         self.layer = layer
         self.points = []
         self._svgDir = ""
         self._svgFilename = ""
 
-        # Uniformly distributed
-        dividers = sorted(random.sample(range(1, 360), vertices - 1))
-        alphaArray = [a - b for a, b in zip(dividers + [360], [0] + dividers)]
+        #Calculate the vertices this defect will use
+        vertices = int(np.random.normal(vertices_mean, vertices_stddev))
 
-        starting_x = random.uniform(area[0], area[2]+area[0]) # minX, maxX
-        starting_y = random.uniform(area[1], area[3]+area[1]) # minY, maxY
+        # Choose middle point of defect uniformly
+        middle = complex(random.uniform(area[0], area[2]+area[0]), 
+                         random.uniform(area[1], area[3]+area[1]))
 
-        #middle point for rotations lalways top left of starting
-        middle = complex(starting_x, starting_y) - complex(random.uniform(sigma_r, sigma_phi * sigma_r), 
-                                                         random.uniform(sigma_r, sigma_phi * sigma_r))
-        point_start = complex(starting_x, starting_y)
+        # Starting point is always to the top left of starting point
+        point_start = complex(middle.real, middle.imag) + complex(np.random.normal(size_mean, size_stddev), 
+                                                                  np.random.normal(size_mean, size_stddev))
+
         self.points.append(point_start)
 
         for index in range(vertices-1):
-            point_end = self.rotate(vertices, point_start, middle)
+            point_end = self.rotate(distance_mean, distance_stddev, angle_mean, angle_stddev, point_start, middle)
             self.points.append(point_end)
-            point_start = self.rotate(vertices, point_start, middle)
+            point_start = self.rotate(distance_mean, distance_stddev, angle_mean, angle_stddev, point_start, middle)
         
         # Generate the posititon of the control points necessary for the CubicBezier curves
-        controlpoints = self._generate_control_points_pairs(self.points, 2)
+        controlpoints = self._generate_control_points_pairs(self.points, 4)
         
         self.bezier_segments = []
         # Create the CubicBezier curves based on the vertices and the control points
@@ -43,11 +48,9 @@ class LargeParticle():
             next = 0 if index == len(self.points)-1 else index+1
             self.bezier_segments.append(svgpt.CubicBezier(self.points[index], controlpoints[index][1],controlpoints[next][0], self.points[next]))
 
-
-
-    def rotate(self, vertices, point, middle):
-        deg = np.random.normal(360/vertices, 360/(12*vertices))
-        return np.random.normal(1, 0.1) * np.exp(1j*np.radians(deg))*(point - middle) + middle
+    def rotate(self, distance_mean, distance_stddev, angle_mean, angle_stddev, previous_point, middle):
+        deg = np.random.normal(angle_mean, angle_stddev)
+        return np.random.normal(distance_mean, distance_stddev) * np.exp(1j*np.radians(deg))*(previous_point - middle) + middle
     
     def get_boundingbox(self):
         x_max, y_max = -10e6, -10e6
@@ -120,7 +123,7 @@ class LargeParticle():
 
     def _generate_control_points_pairs(self, points, distance_factor):
         # Generate two control points for each vertice, the control points should be placed optimally  
-        # Big brain math time
+        # Big brain math time, have fun trying to understand
         control_points_pairs = []
         for index in range(len(points)):
             # Prevent list overflow error

@@ -5,7 +5,6 @@ import svgpathtools as pt
 from wand.image import Image
 
 from defectGeneration.membrane import MembraneDefect
-from defectGeneration.lparticles import LParticles
 from defectGeneration.particles import Particles
 import os
 from queue import Queue
@@ -182,20 +181,6 @@ class Die():
         self.add_component('particles', die.get_polygons()[0])
 
         print(self._components['particles'])
-
-        self._components['particles'].set_fill('black')
-        self._components['particles'].set_fill_opacity('1')
-        self._components['particles'].set_stroke_opacity(1)
-        self._components['particles'].set_stroke('black')
-
-        self.__generated_defects['particles'] = die.get_polygons()
-        
-        self.__particle_coords = die.get_coords()
-
-    def generate_lparticles(self, layer, vertices, sigma_r, sigma_phi, amount):
-        die = LParticles(self._components[layer].return_paths())
-        die.polygon_points(vertices, sigma_r, sigma_phi, amount)
-        self.add_component('particles', die.get_polygons()[0])
 
         self._components['particles'].set_fill('black')
         self._components['particles'].set_fill_opacity('1')
