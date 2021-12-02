@@ -5,7 +5,7 @@ import os.path
 import numpy as np
 import svgpathtools as svgpt
 from wand.image import Image
-from xml.dom.minidom import parse
+from xml.dom.minidom import parse, parseString
 
 class LargeParticle():
     def __init__(self, srcImg, area, 
@@ -51,8 +51,8 @@ class LargeParticle():
 
     def dev_rotate(self, distance_mean, distance_stddev, angle_variance, vertices, previous_point, middle):
         deg = np.random.normal(360/vertices, 360/(angle_variance*vertices))
-        previous_deg = np.angle(previous_point-middle)
-        return np.random.normal(distance_mean, distance_stddev) * np.exp(1j*(np.radians(deg)+previous_deg)) + middle
+        deg_previous = np.angle(previous_point-middle)
+        return np.random.normal(distance_mean, distance_stddev) * np.exp(1j*(np.radians(deg)+deg_previous)) + middle
     
     def get_boundingbox(self):
         x_max, y_max = -10e6, -10e6
@@ -80,6 +80,13 @@ class LargeParticle():
         # Create the filter element as a <filter>
         filter_xml_element = xmlDoc.createElement("filter")
         filter_xml_element.setAttribute("id", "blur_filter")
+
+        feTurbulence_element = parseString('<feTurbulence type="fractalNoise" result="myComposite" baseFrequency="0.02" numOctaves="5" seed="2" />')
+        filter_xml_element.appendChild(feTurbulence_element.documentElement)
+        feComposite_element = parseString('<feComposite operator="in" in="myTurbulence" in2="SourceAlpha" result="myComposite"/>')
+        filter_xml_element.appendChild(feComposite_element.documentElement)
+        feColorMatrix_element = parseString('<feColorMatrix type="myComposite" values="0.012 0 0 0 0  0 0.012 0 0 0  0 0 0.012 0 0  2 2 2 0.9 0"></feColorMatrix>')
+        filter_xml_element.appendChild(feColorMatrix_element.documentElement)
 
         # Create the Gaussian blur element as a <feGaussianBlur> tag
         blur_xml_element = xmlDoc.createElement("feGaussianBlur")
