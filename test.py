@@ -8,10 +8,12 @@ largeParticle = LargeParticle(srcImg=baseImage,
                               angle_variance=10, blur_stddev=1, 
                               curviness=4)
 # generate svg file
-largeParticle.output_to_svg()
+#largeParticle.output_to_svg()
 
 # store in csv file, it will always make sure to generate svg file first
-largeParticle.output_to_csv()
+#largeParticle.output_to_csv()
 
 # output to png image, it will always make sure to generate svg file first
-largeParticle.output_to_png()
+#largeParticle.output_to_png()
+
+

@@ -27,9 +27,6 @@ class LargeParticle():
         middle = complex(random.uniform(area[0], area[2]+area[0]), 
                          random.uniform(area[1], area[3]+area[1]))
 
-        """# Starting point is always to the top left of starting point
-        point_start = complex(middle.real, middle.imag) + complex(np.random.normal(size_mean, size_stddev), 
-                                                                  np.random.normal(size_mean, size_stddev))"""
         point_start = np.random.normal(size_mean, size_stddev) * np.exp(1j*random.uniform(0, 2*math.pi)) + middle
 
         self.points.append(point_start)
