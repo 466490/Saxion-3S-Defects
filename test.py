@@ -1,7 +1,7 @@
-from defectGeneration.defectTypes.largeParticle import LargeParticle
+from defectGeneration.particle_defect import ParticleDefect
 
 baseImage = "../base_design_V4.svg"
-largeParticle = LargeParticle(srcImg=baseImage, 
+largeParticle = ParticleDefect(srcImg=baseImage, 
                               area=(-700, -950, 1400, 1650), 
                               vertices_mean=18, vertices_stddev=2, 
                               size_mean=35, size_stddev=7,

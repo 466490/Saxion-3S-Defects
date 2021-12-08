@@ -1,8 +1,7 @@
 /output/csv
 /output/png
 /output/svg
+/output/temp
 .vscode/
 /defectGeneration/__pycache__
 /defectGeneration/defectTypes/__pycache__
-membrane.csv
-particles.csv

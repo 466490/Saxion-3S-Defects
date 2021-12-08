@@ -4,8 +4,8 @@ from .component import Component
 import svgpathtools as pt
 from wand.image import Image
 
-from defectGeneration.membrane import MembraneDefect
-from defectGeneration.particles import Particles
+from defectGeneration.old.membrane import MembraneDefect
+from defectGeneration.old.particles import Particles
 import os
 from queue import Queue
 import copy
