@@ -48,6 +48,10 @@ class Ui_MainWindow(object):
 		self.filename_browse = QtWidgets.QPushButton(self.centralwidget)
 		self.filename_browse.setEnabled(True)
 		self.filename_browse.setObjectName("filename_browse")
+		
+		# Connect filename browse button to function ---------------
+		self.filename_browse.clicked.connect(self.browse_input_files)
+
 		self.horizontalLayout_3.addWidget(self.filename_browse)
 		self.horizontalLayout_3.setStretch(0, 7)
 		self.horizontalLayout_3.setStretch(1, 3)
@@ -235,9 +239,19 @@ class Ui_MainWindow(object):
 		self.horizontalLayout_4.addWidget(self.invalid_parameters_error)
 		self.preview_button = QtWidgets.QPushButton(self.centralwidget)
 		self.preview_button.setObjectName("preview_button")
+		self.preview_button.setEnabled(False)
+		
+		# Connect preview defect generation button to function
+		self.preview_button.clicked.connect(self.generate_preview)
+
 		self.horizontalLayout_4.addWidget(self.preview_button)
 		self.clear_preview_button = QtWidgets.QPushButton(self.centralwidget)
 		self.clear_preview_button.setObjectName("clear_preview_button")
+		self.clear_preview_button.setEnabled(False)
+		
+		# Connect clear preview to function
+		self.clear_preview_button.clicked.connect(self.clear_preview)
+
 		self.horizontalLayout_4.addWidget(self.clear_preview_button)
 		self.horizontalLayout_4.setStretch(0, 2)
 		self.horizontalLayout_4.setStretch(1, 4)

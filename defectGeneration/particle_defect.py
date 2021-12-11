@@ -57,17 +57,15 @@ class ParticleDefect():
         angles = []
         while total_angle < 360:
             new_angle = np.random.normal(angle_mean, angle_stddev)
-            # Catch negative angles
-            if new_angle < 0:
-                new_angle = 1
-            total_angle += new_angle
+            total_angle += (0 if new_angle < 0 else new_angle)
             angles.append(float(new_angle))
         return [360/total_angle*angle for angle in angles]
 
     def _calculate_amount_of_defects(self, density_mean, density_stddev, width, height):
         # Density is calculated per 1000x1000 pixels
         density_factor = (width*height)/1000000
-        return round(np.random.normal(density_mean, density_stddev)*density_factor)
+        density_normal = np.random.normal(density_mean, density_stddev)
+        return round((0 if density_normal < 0 else density_normal) * density_factor)
     
     def _calculate_amount_of_vertices(self, vertices_mean, vertices_stddev):
         return round(np.random.normal(vertices_mean, vertices_stddev))
@@ -78,7 +76,7 @@ class ParticleDefect():
     def _calculate_first_point(self, size_mean, size_stddev, offset):
         size = np.random.normal(size_mean, size_stddev)
         random_angle = np.exp(1j*random.uniform(0, 2*math.pi))
-        return size * random_angle + offset
+        return (0 if size < 0 else size) * random_angle + offset
 
     def _calculate_next_point(self, distance_mean, distance_stddev, angle, previous_point, middle):
         previous_angle = np.angle(previous_point-middle)
