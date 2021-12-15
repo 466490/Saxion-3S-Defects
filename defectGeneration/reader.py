@@ -1,4 +1,21 @@
 from xml.dom.minidom import parse
+import os
+from multiprocessing import Lock
+
+mutex = Lock()
+def find_available_filename(search_dir, filename):
+    with mutex:
+        #Runs in log(n) time where n is the number of existing files in sequence
+        index = 1
+        while os.path.exists(search_dir + filename % index):
+            index *= 2
+
+        interval_begin, interval_end = (index // 2, index)
+        while interval_begin + 1 < interval_end:
+            midpoint = (interval_begin + interval_end) // 2
+            interval_begin, interval_end = (midpoint, interval_end) if os.path.exists(search_dir+filename % midpoint) else (interval_begin, midpoint)
+
+        return filename % interval_end
 
 def get_layers(file_path):
     # Parse the SVG file into XML
@@ -33,3 +50,11 @@ def get_area_of_layer(file_path, layer):
             elif element.nodeName == "polygon":
                 pass #todo
     return area
+
+def get_first_csv_file(csv_dir, default_filename="defects.csv"):
+    results = [each for each in os.listdir(csv_dir) if each.endswith(".csv")]
+    if not results:
+        with open(csv_dir+"defects.csv", "w") as file:
+            file.write("class,filename,xmin,ymin,xmax,ymax,\n")
+        return csv_dir+default_filename
+    return csv_dir+results[0]
