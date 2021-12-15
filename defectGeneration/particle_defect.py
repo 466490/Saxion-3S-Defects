@@ -13,14 +13,13 @@ class ParticleDefect():
                  size_mean, size_stddev,
                  vertices, angle_variance,
                  curviness, blur, 
-                 layer="none"):
+                 layer="none", color="#000000"):
         self.srcImg = srcImg
         self.layer = layer
         self.blur = blur/20
         self.area = area
-        self._svgDir = ""
-        self._svgFilename = ""
-
+        self.color = color
+        
         self.classname = "large_particle" # TODO fix
 
         self.defects_points = []
@@ -149,12 +148,15 @@ class ParticleDefect():
 
     def get_all_bbox_coords(self, offset_multiply=0.2):
         bbox = []
-        for defect in range(len(self.defects_points)-1):
+        for defect in range(len(self.defects_points)):
             bbox.append(self._get_boundingbox_coords(defect, offset_multiply, True))
         return bbox
 
     def get_classname(self):
         return self.classname
+
+    def get_image_dimensions(self):
+        return (self.area[2], self.area[3])
 
     def preview_image_svg(self, bbox):
         return self._get_image_as_binary("Fast", bbox)
@@ -262,65 +264,3 @@ class ParticleDefect():
         blur_xml_element.setAttribute("in", "myColorMatrix")
         filter_xml_element.appendChild(blur_xml_element)
         return filter_xml_element
-
-    def output_to_svg(self, svg_out_dir="output/svg/"):
-        try:
-            self._svgFilename = self._find_available_filename(svg_out_dir, "large_particle%s.svg")
-            shutil.copyfile(self.srcImg, svg_out_dir+self._svgFilename)
-            xmlDoc = parse(svg_out_dir+self._svgFilename)
-        except Exception:
-            print("The input SVG image is not found or the output directory does not exist")
-            return
-        
-        # Create the filter element as a <filter>
-        filter_xml_element = xmlDoc.createElement("filter")
-        filter_xml_element.setAttribute("id", "blur_filter")
-
-        feTurbulence_element = parseString('<feTurbulence type="fractalNoise" result="myComposite" baseFrequency="0.02" numOctaves="5" seed="2" />')
-        filter_xml_element.appendChild(feTurbulence_element.documentElement)
-        feComposite_element = parseString('<feComposite operator="in" in="myTurbulence" in2="SourceAlpha" result="myComposite"/>')
-        filter_xml_element.appendChild(feComposite_element.documentElement)
-        feColorMatrix_element = parseString('<feColorMatrix type="myComposite" values="0.012 0 0 0 0  0 0.012 0 0 0  0 0 0.012 0 0  2 2 2 0.9 0"></feColorMatrix>')
-        filter_xml_element.appendChild(feColorMatrix_element.documentElement)
-
-        # Create the Gaussian blur element as a <feGaussianBlur> tag
-        blur_xml_element = xmlDoc.createElement("feGaussianBlur")
-        blur_xml_element.setAttribute("stdDeviation", str(self.blur))
-        filter_xml_element.appendChild(blur_xml_element)
-        xmlDoc.firstChild.appendChild(filter_xml_element)
-
-        # Create the XML element as a <path> tag
-        defect_xml_element = xmlDoc.createElement("path")
-        defect_xml_element.setAttribute("filter", "url(#blur_filter)")
-        defect_xml_element.setAttribute("d", svgpt.Path(*self.defects_bezier_segments).d())
-        defect_xml_element.setAttribute("style", "fill:black;fill-opacity:1;stroke:black;none;none")
-
-
-        if self.layer != "none":
-            # Find correct elements based on layer
-            for element in xmlDoc.getElementsByTagName("g"):
-                if element.getAttribute("inkscape:label") == self.layer:
-                    element.appendChild(defect_xml_element)
-        else:
-            # Put defect on top of everything
-            xmlDoc.firstChild.appendChild(defect_xml_element)
-
-        # Write the changed xml file to disk
-        with open(svg_out_dir+self._svgFilename, "w") as file:
-            file.write(xmlDoc.toxml())
-        self._svgDir = svg_out_dir
-
-    def output_to_csv(self, csv_out_dir="output/csv/"):
-        if self._svgFilename == "":
-            self.output_to_svg()
-        try:
-            data_line = "large_particle,"+csv_out_dir+self._svgFilename.replace("svg", "png")+",%.2f,%.2f,%.2f,%.2f"%self.get_boundingbox()+"\n"
-            if os.path.exists(csv_out_dir + "large_particle.csv"):
-                with open(csv_out_dir + "large_particle.csv", "a") as file:
-                    file.write(data_line)
-            else:
-                with open(csv_out_dir + "large_particle.csv", "w") as file:
-                    file.write("class,filename,xmin,ymin,xmax,ymax\n")
-                    file.write(data_line)
-        except Exception:
-            print("Was unable to save the defect to the csv file")

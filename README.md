@@ -2,5 +2,6 @@
 
 Packages required:
     - numpy
-    - wand (py-wand or any other python binding)
+    - wand (python binding of ImageMagick)
     - svgpathtools
+    - PyQt5

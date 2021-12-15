@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-import reader, time, os
+import reader, time
 from particle_defect import ParticleDefect
 from multi_processor import MultiProcessor
 
@@ -211,6 +211,25 @@ class Ui_MainWindow(object):
 		self.horizontalLayout_16.setStretch(0, 1)
 		self.horizontalLayout_16.setStretch(1, 6)
 		self.verticalLayout_3.addLayout(self.horizontalLayout_16)
+		self.horizontalLayout_11 = QtWidgets.QHBoxLayout()
+		self.horizontalLayout_11.setObjectName("horizontalLayout_11")
+		self.label_2 = QtWidgets.QLabel(self.centralwidget)
+		self.label_2.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+		self.label_2.setObjectName("label_2")
+		self.horizontalLayout_11.addWidget(self.label_2)
+		self.color_input = QtWidgets.QPushButton(self.centralwidget)
+		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+		sizePolicy.setHorizontalStretch(0)
+		sizePolicy.setVerticalStretch(0)
+		sizePolicy.setHeightForWidth(self.color_input.sizePolicy().hasHeightForWidth())
+		self.color_input.setSizePolicy(sizePolicy)
+		self.color_input.setStyleSheet("background-color: black")
+		self.color_input.setText("")
+		self.color_input.setObjectName("color_input")
+		self.horizontalLayout_11.addWidget(self.color_input)
+		self.horizontalLayout_11.setStretch(0, 1)
+		self.horizontalLayout_11.setStretch(1, 6)
+		self.verticalLayout_3.addLayout(self.horizontalLayout_11)
 		self.verticalLayout_2.addLayout(self.verticalLayout_3)
 		spacerItem1 = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
 		self.verticalLayout_2.addItem(spacerItem1)
@@ -335,37 +354,6 @@ class Ui_MainWindow(object):
 		self.verticalLayout_2.addWidget(self.invalid_output_dir_error)
 		spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
 		self.verticalLayout_2.addItem(spacerItem4)
-		self.label_9 = QtWidgets.QLabel(self.centralwidget)
-		self.label_9.setObjectName("label_9")
-		self.verticalLayout_2.addWidget(self.label_9)
-		self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
-		self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-		self.csv_path_input = QtWidgets.QPlainTextEdit(self.centralwidget)
-		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Ignored)
-		sizePolicy.setHorizontalStretch(0)
-		sizePolicy.setVerticalStretch(0)
-		sizePolicy.setHeightForWidth(self.csv_path_input.sizePolicy().hasHeightForWidth())
-		self.csv_path_input.setSizePolicy(sizePolicy)
-		self.csv_path_input.setReadOnly(True)
-		self.csv_path_input.setObjectName("csv_path_input")
-		self.horizontalLayout_7.addWidget(self.csv_path_input)
-		self.csv_output_browse = QtWidgets.QPushButton(self.centralwidget)
-		self.csv_output_browse.setObjectName("csv_output_browse")
-		self.horizontalLayout_7.addWidget(self.csv_output_browse)
-		self.horizontalLayout_7.setStretch(0, 7)
-		self.horizontalLayout_7.setStretch(1, 3)
-		self.verticalLayout_2.addLayout(self.horizontalLayout_7)
-		self.invalid_csv_dir_error = QtWidgets.QLabel(self.centralwidget)
-		font = QtGui.QFont()
-		font.setBold(True)
-		font.setWeight(75)
-		self.invalid_csv_dir_error.setFont(font)
-		self.invalid_csv_dir_error.setStyleSheet("QLabel { color : red; }")
-		self.invalid_csv_dir_error.setText("")
-		self.invalid_csv_dir_error.setObjectName("invalid_csv_dir_error")
-		self.verticalLayout_2.addWidget(self.invalid_csv_dir_error)
-		spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
-		self.verticalLayout_2.addItem(spacerItem5)
 		self.horizontalLayout_12 = QtWidgets.QHBoxLayout()
 		self.horizontalLayout_12.setObjectName("horizontalLayout_12")
 		self.label_4 = QtWidgets.QLabel(self.centralwidget)
@@ -383,8 +371,8 @@ class Ui_MainWindow(object):
 		self.horizontalLayout_12.setStretch(1, 1)
 		self.horizontalLayout_12.setStretch(2, 9)
 		self.verticalLayout_2.addLayout(self.horizontalLayout_12)
-		spacerItem6 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-		self.verticalLayout_2.addItem(spacerItem6)
+		spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+		self.verticalLayout_2.addItem(spacerItem5)
 		self.horizontalLayout.addLayout(self.verticalLayout_2)
 		self.verticalLayout = QtWidgets.QVBoxLayout()
 		self.verticalLayout.setObjectName("verticalLayout")
@@ -395,7 +383,6 @@ class Ui_MainWindow(object):
 		sizePolicy.setHeightForWidth(self.shown_image.sizePolicy().hasHeightForWidth())
 		self.shown_image.setSizePolicy(sizePolicy)
 		self.shown_image.setText("")
-		self.shown_image.setPixmap(QtGui.QPixmap("../../output/png/large_particle1.png"))
 		self.shown_image.setScaledContents(True)
 		self.shown_image.setAlignment(QtCore.Qt.AlignCenter)
 		self.shown_image.setObjectName("shown_image")
@@ -409,6 +396,28 @@ class Ui_MainWindow(object):
 		self.retranslateUi(MainWindow)
 		QtCore.QMetaObject.connectSlotsByName(MainWindow)
 		MainWindow.setTabOrder(self.filename_input, self.filename_browse)
+		MainWindow.setTabOrder(self.filename_browse, self.layer_dropdown)
+		MainWindow.setTabOrder(self.layer_dropdown, self.density_mean_input)
+		MainWindow.setTabOrder(self.density_mean_input, self.density_stddev_input)
+		MainWindow.setTabOrder(self.density_stddev_input, self.size_mean_input)
+		MainWindow.setTabOrder(self.size_mean_input, self.size_stddev_input)
+		MainWindow.setTabOrder(self.size_stddev_input, self.vertices_input)
+		MainWindow.setTabOrder(self.vertices_input, self.angle_variance_input)
+		MainWindow.setTabOrder(self.angle_variance_input, self.curviness_input)
+		MainWindow.setTabOrder(self.curviness_input, self.blur_input)
+		MainWindow.setTabOrder(self.blur_input, self.preview_button)
+		MainWindow.setTabOrder(self.preview_button, self.clear_preview_button)
+		MainWindow.setTabOrder(self.clear_preview_button, self.toggle_accuracy_button)
+		MainWindow.setTabOrder(self.toggle_accuracy_button, self.toggle_bbox_button)
+		MainWindow.setTabOrder(self.toggle_bbox_button, self.gen_1_button)
+		MainWindow.setTabOrder(self.gen_1_button, self.gen_5_button)
+		MainWindow.setTabOrder(self.gen_5_button, self.gen_10_button)
+		MainWindow.setTabOrder(self.gen_10_button, self.gen_100_button)
+		MainWindow.setTabOrder(self.gen_100_button, self.gen_1000_button)
+		MainWindow.setTabOrder(self.gen_1000_button, self.gen_manual_input)
+		MainWindow.setTabOrder(self.gen_manual_input, self.generate_button)
+		MainWindow.setTabOrder(self.generate_button, self.image_path_input)
+		MainWindow.setTabOrder(self.image_path_input, self.image_output_browse)
 
 	def retranslateUi(self, MainWindow):
 		_translate = QtCore.QCoreApplication.translate
@@ -432,6 +441,7 @@ class Ui_MainWindow(object):
 		self.curviness_input.setPlaceholderText(_translate("MainWindow", "percentage between 0.0 and 100.0"))
 		self.label_19.setText(_translate("MainWindow", "Blur"))
 		self.blur_input.setPlaceholderText(_translate("MainWindow", "percentage between 0.0 and 100.0"))
+		self.label_2.setText(_translate("MainWindow", "Color"))
 		self.label_6.setText(_translate("MainWindow", "Preview"))
 		self.preview_button.setText(_translate("MainWindow", "Preview"))
 		self.clear_preview_button.setText(_translate("MainWindow", "Clear"))
@@ -448,9 +458,6 @@ class Ui_MainWindow(object):
 		self.label_8.setText(_translate("MainWindow", "Output image file directory"))
 		self.image_path_input.setPlaceholderText(_translate("MainWindow", "Path to image output directory"))
 		self.image_output_browse.setText(_translate("MainWindow", "Browse"))
-		self.label_9.setText(_translate("MainWindow", "Output csv file directory"))
-		self.csv_path_input.setPlaceholderText(_translate("MainWindow", "Path to csv directory"))
-		self.csv_output_browse.setText(_translate("MainWindow", "Browse"))
 		self.label_4.setText(_translate("MainWindow", "Image generation progress"))
 		self.file_progress.setText(_translate("MainWindow", "0 / 0"))
 
@@ -465,6 +472,8 @@ class Ui_MainWindow(object):
 		self.toggle_accuracy_button.clicked.connect(self.toggle_accuracy)
 		# Connect generate image button to function
 		self.generate_button.clicked.connect(self.generate_images)
+
+		self.color_input.clicked.connect(self.open_color_dialog)
 		
 		self.gen_1_button.clicked.connect(lambda: self.input_amount_gen(1))
 		self.gen_5_button.clicked.connect(lambda: self.input_amount_gen(5))
@@ -473,7 +482,6 @@ class Ui_MainWindow(object):
 		self.gen_1000_button.clicked.connect(lambda: self.input_amount_gen(1000))
 
 		self.image_output_browse.clicked.connect(self.browse_output_dir)
-		self.csv_output_browse.clicked.connect(self.browse_csv_dir)
 
 	def toggle_accuracy(self):
 		if self.toggle_accuracy_button.text() == "Accurate":
@@ -497,6 +505,11 @@ class Ui_MainWindow(object):
 			layers = reader.get_layers(self.path_to_input_image)
 			self.layer_dropdown.clear()
 			self.layer_dropdown.insertItems(0, layers)
+	
+	def open_color_dialog(self):
+		color = QtWidgets.QColorDialog.getColor(initial=self.color_input.palette().button().color())
+		if color.isValid():
+			self.color_input.setStyleSheet("background-color:" + color.name() +";")
 		
 
 	def generate_preview(self):
@@ -508,7 +521,7 @@ class Ui_MainWindow(object):
 								size_mean=self.size_mean_value, size_stddev=self.size_stddev_value,
 								vertices=self.vertices_value, angle_variance=self.angle_variance_value,
 								curviness=self.curviness_value, 
-								blur=self.blur_value, layer=self.layer_dropdown.currentText())
+								blur=self.blur_value, layer=self.layer_dropdown.currentText(), color=self.color_input.palette().button().color().name())
 			if self.toggle_accuracy_button.text() == "Fast":
 				svg_img = QtGui.QPixmap()
 				svg_img.loadFromData(QtCore.QByteArray(defect.preview_image_svg(self.toggle_bbox_button.isChecked())), "svg")
@@ -521,23 +534,11 @@ class Ui_MainWindow(object):
 
 	def generate_images(self):
 		if self.check_parameters():
-			try:
-				self.invalid_images_amount_error.setText("")
-				amount = int(self.gen_manual_input.toPlainText())
-				if amount <= 0:
-					raise Exception
-			except Exception:
-				self.invalid_images_amount_error.setText("Unable to get the number of wanted images")
-				return
-
-			if self.csv_path_input.toPlainText() != "" and self.image_path_input.toPlainText() != "":
-				png_out_dir = self.image_path_input.toPlainText()
-				if not png_out_dir.endswith("/"):
-					png_out_dir += "/"
-				if not self.csv_path_input.toPlainText().endswith("/"):
-					csv_out_dir = reader.get_first_csv_file(self.csv_path_input.toPlainText()+"/")
-				else:
-					csv_out_dir = reader.get_first_csv_file(self.csv_path_input.toPlainText())
+			amount = self._get_amount_to_gen()
+			if amount > 0 and self.image_out_dir != "":
+				if not self.image_out_dir.endswith("/"):
+					self.image_out_dir += "/"
+				csv_out_file = reader.get_first_csv_file(self.image_out_dir)
 				self.progressBar.setMaximum(amount)
 				self.progressBar.setValue(0)
 				self.file_progress.setText("0 / " + str(amount))
@@ -549,12 +550,23 @@ class Ui_MainWindow(object):
 						self.curviness_value, self.blur_value, 
 						self.layer_dropdown.currentText())
 
-				mp = MultiProcessor(ParticleDefect, config, amount, png_out_dir, csv_out_dir)
+				mp = MultiProcessor(ParticleDefect, config, amount, self.image_out_dir, csv_out_file)
 				start_time = time.time()
 				mp.run(self.progressBar, self.file_progress)
 				end_time = time.time()
 				print(end_time - start_time)
 				print("Generation done")
+
+	def _get_amount_to_gen(self):
+		amount = 0
+		try:
+			self.invalid_images_amount_error.setText("")
+			amount = int(self.gen_manual_input.toPlainText())
+			if amount <= 0:
+				raise Exception
+		except Exception:
+			self.invalid_images_amount_error.setText("Unable to get the number of wanted images")
+		return amount
 
 	def browse_output_dir(self):
 		try:
@@ -563,28 +575,11 @@ class Ui_MainWindow(object):
 			if directory != "":
 				self.image_out_dir = directory
 				self.image_path_input.setPlainText(self.image_out_dir)
-				if self.csv_path_input.toPlainText() != "":
-					self.generate_button.setEnabled(True)
+				self.generate_button.setEnabled(True)
 		except Exception: 
 			self.image_out_dir = ""
 			self.invalid_output_dir_error.setText("Unable to select output directory")
 			self.generate_button.setEnabled(False)
-			return False
-		
-	def browse_csv_dir(self):
-		try:
-			self.invalid_csv_dir_error.setText("")
-			directory = QtWidgets.QFileDialog.getExistingDirectory(self.centralwidget, "Select csv file/directory", ".")
-			if directory != "":
-				self.csv_output_dir = directory
-				self.csv_path_input.setPlainText(self.csv_output_dir)
-				if self.image_path_input.toPlainText() != "":
-					self.generate_button.setEnabled(True)
-		except Exception: 
-			self.csv_output_dir = ""
-			self.invalid_csv_dir_error.setText("Unable to select csv directory")
-			self.generate_button.setEnabled(False)
-			return False
 
 	def input_amount_gen(self, amount):
 		self.gen_manual_input.setPlainText(str(amount))

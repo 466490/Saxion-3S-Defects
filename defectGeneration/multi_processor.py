@@ -1,8 +1,6 @@
 import concurrent.futures
-import queue
 from particle_defect import ParticleDefect
 import reader
-import os
 
 class MultiProcessor():
     def __init__(self, type, config, amount, png_dir, csv_file):
@@ -16,12 +14,14 @@ class MultiProcessor():
         defect = type(*config)
         png_binary = defect.preview_image_png(bbox=False)
         bbox_coords = defect.get_all_bbox_coords()
+        width, height = defect.get_image_dimensions()
         available_filename = reader.find_available_filename(png_dir, defect.get_classname()+"%s.png")
         with open(png_dir+available_filename, "w+b") as file:
             file.write(bytearray(png_binary))
         csv_lines = ""
         for bbox in bbox_coords:
-            csv_lines += defect.get_classname()+","+available_filename+",%.2f,%.2f,%.2f,%.2f"%bbox+"\n"
+            # format of bbox = x_min, y_min, x_max, y_max
+            csv_lines += "{},{:.0f},{:.0f},{},{:.6f},{:.6f},{:.6f},{:.6f},\n".format(available_filename,width,height,defect.get_classname(),bbox[1],bbox[0],bbox[3],bbox[2])
         return csv_lines
     
     def run(self, progressBar, file_progress):

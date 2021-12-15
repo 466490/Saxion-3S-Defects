@@ -28,7 +28,7 @@
      <number>2</number>
     </property>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0">
+     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0">
       <item>
        <widget class="QLabel" name="label_3">
         <property name="text">
@@ -426,6 +426,36 @@
           </item>
          </layout>
         </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,6">
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Color</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="color_input">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: black</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
        </layout>
       </item>
       <item>
@@ -705,72 +735,6 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLabel" name="label_9">
-        <property name="text">
-         <string>Output csv file directory</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="7,3">
-        <item>
-         <widget class="QPlainTextEdit" name="csv_path_input">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-          <property name="placeholderText">
-           <string>Path to csv directory</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="csv_output_browse">
-          <property name="text">
-           <string>Browse</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QLabel" name="invalid_csv_dir_error">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QLabel { color : red; }</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer_7">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Minimum</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="2,1,9">
         <item>
          <widget class="QLabel" name="label_4">
@@ -780,7 +744,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="file_progress">
           <property name="text">
            <string>0 / 0</string>
           </property>
@@ -829,9 +793,6 @@
         <property name="text">
          <string/>
         </property>
-        <property name="pixmap">
-         <pixmap>../../output/png/large_particle1.png</pixmap>
-        </property>
         <property name="scaledContents">
          <bool>true</bool>
         </property>
@@ -848,6 +809,28 @@
  <tabstops>
   <tabstop>filename_input</tabstop>
   <tabstop>filename_browse</tabstop>
+  <tabstop>layer_dropdown</tabstop>
+  <tabstop>density_mean_input</tabstop>
+  <tabstop>density_stddev_input</tabstop>
+  <tabstop>size_mean_input</tabstop>
+  <tabstop>size_stddev_input</tabstop>
+  <tabstop>vertices_input</tabstop>
+  <tabstop>angle_variance_input</tabstop>
+  <tabstop>curviness_input</tabstop>
+  <tabstop>blur_input</tabstop>
+  <tabstop>preview_button</tabstop>
+  <tabstop>clear_preview_button</tabstop>
+  <tabstop>toggle_accuracy_button</tabstop>
+  <tabstop>toggle_bbox_button</tabstop>
+  <tabstop>gen_1_button</tabstop>
+  <tabstop>gen_5_button</tabstop>
+  <tabstop>gen_10_button</tabstop>
+  <tabstop>gen_100_button</tabstop>
+  <tabstop>gen_1000_button</tabstop>
+  <tabstop>gen_manual_input</tabstop>
+  <tabstop>generate_button</tabstop>
+  <tabstop>image_path_input</tabstop>
+  <tabstop>image_output_browse</tabstop>
  </tabstops>
  <resources/>
  <connections/>

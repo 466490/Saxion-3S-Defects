@@ -51,10 +51,10 @@ def get_area_of_layer(file_path, layer):
                 pass #todo
     return area
 
-def get_first_csv_file(csv_dir, default_filename="defects.csv"):
+def get_first_csv_file(csv_dir, default_filename="train_labels.csv"):
     results = [each for each in os.listdir(csv_dir) if each.endswith(".csv")]
     if not results:
-        with open(csv_dir+"defects.csv", "w") as file:
-            file.write("class,filename,xmin,ymin,xmax,ymax,\n")
+        with open(csv_dir+default_filename, "w") as file:
+            file.write("filename,width,height,class,ymin,xmin,ymax,xmax,\n")
         return csv_dir+default_filename
     return csv_dir+results[0]
