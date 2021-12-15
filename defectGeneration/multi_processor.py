@@ -24,7 +24,7 @@ class MultiProcessor():
             csv_lines += defect.get_classname()+","+available_filename+",%.2f,%.2f,%.2f,%.2f"%bbox+"\n"
         return csv_lines
     
-    def run(self, progressBar):
+    def run(self, progressBar, file_progress):
         csv_lines = ""
         with concurrent.futures.ProcessPoolExecutor() as executor:
             results = [executor.submit(self.gen_defect, self.type, self.config, self.png_dir) for _ in range(self.amount)]
@@ -32,6 +32,7 @@ class MultiProcessor():
             for f in concurrent.futures.as_completed(results):
                 old_value = progressBar.value()
                 progressBar.setValue(old_value+1)
+                file_progress.setText(str(old_value+1)+" / " + str(self.amount))
                 csv_lines += f.result()
         with open(self.csv_file, "a") as file:
             file.write(csv_lines)

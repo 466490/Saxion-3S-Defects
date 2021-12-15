@@ -287,8 +287,8 @@ class Ui_MainWindow(object):
 		self.gen_manual_input.setObjectName("gen_manual_input")
 		self.horizontalLayout_5.addWidget(self.gen_manual_input)
 		self.generate_button = QtWidgets.QPushButton(self.centralwidget)
-		self.generate_button.setObjectName("generate_button")
 		self.generate_button.setEnabled(False)
+		self.generate_button.setObjectName("generate_button")
 		self.horizontalLayout_5.addWidget(self.generate_button)
 		self.horizontalLayout_5.setStretch(0, 7)
 		self.horizontalLayout_5.setStretch(1, 3)
@@ -346,8 +346,8 @@ class Ui_MainWindow(object):
 		sizePolicy.setVerticalStretch(0)
 		sizePolicy.setHeightForWidth(self.csv_path_input.sizePolicy().hasHeightForWidth())
 		self.csv_path_input.setSizePolicy(sizePolicy)
-		self.csv_path_input.setObjectName("csv_path_input")
 		self.csv_path_input.setReadOnly(True)
+		self.csv_path_input.setObjectName("csv_path_input")
 		self.horizontalLayout_7.addWidget(self.csv_path_input)
 		self.csv_output_browse = QtWidgets.QPushButton(self.centralwidget)
 		self.csv_output_browse.setObjectName("csv_output_browse")
@@ -371,10 +371,17 @@ class Ui_MainWindow(object):
 		self.label_4 = QtWidgets.QLabel(self.centralwidget)
 		self.label_4.setObjectName("label_4")
 		self.horizontalLayout_12.addWidget(self.label_4)
+		self.file_progress = QtWidgets.QLabel(self.centralwidget)
+		self.file_progress.setAlignment(QtCore.Qt.AlignCenter)
+		self.file_progress.setObjectName("file_progress")
+		self.horizontalLayout_12.addWidget(self.file_progress)
 		self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
 		self.progressBar.setProperty("value", 0)
 		self.progressBar.setObjectName("progressBar")
 		self.horizontalLayout_12.addWidget(self.progressBar)
+		self.horizontalLayout_12.setStretch(0, 2)
+		self.horizontalLayout_12.setStretch(1, 1)
+		self.horizontalLayout_12.setStretch(2, 9)
 		self.verticalLayout_2.addLayout(self.horizontalLayout_12)
 		spacerItem6 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
 		self.verticalLayout_2.addItem(spacerItem6)
@@ -445,6 +452,7 @@ class Ui_MainWindow(object):
 		self.csv_path_input.setPlaceholderText(_translate("MainWindow", "Path to csv directory"))
 		self.csv_output_browse.setText(_translate("MainWindow", "Browse"))
 		self.label_4.setText(_translate("MainWindow", "Image generation progress"))
+		self.file_progress.setText(_translate("MainWindow", "0 / 0"))
 
 	def setup_function_connects(self):
 		# Connect filename browse button to function
@@ -532,6 +540,7 @@ class Ui_MainWindow(object):
 					csv_out_dir = reader.get_first_csv_file(self.csv_path_input.toPlainText())
 				self.progressBar.setMaximum(amount)
 				self.progressBar.setValue(0)
+				self.file_progress.setText("0 / " + str(amount))
 				self.area = reader.get_area_of_layer(self.path_to_input_image, self.layer_dropdown.currentText())
 				config = (self.path_to_input_image, self.area, 
 						self.density_mean_value, self.density_stddev_value,
@@ -542,7 +551,7 @@ class Ui_MainWindow(object):
 
 				mp = MultiProcessor(ParticleDefect, config, amount, png_out_dir, csv_out_dir)
 				start_time = time.time()
-				mp.run(self.progressBar)
+				mp.run(self.progressBar, self.file_progress)
 				end_time = time.time()
 				print(end_time - start_time)
 				print("Generation done")
