@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import reader, time
-from particle_defect import ParticleDefect
+from defectTypes.particle_defect import ParticleDefect
 from multi_processor import MultiProcessor
 
 class Ui_MainWindow(object):

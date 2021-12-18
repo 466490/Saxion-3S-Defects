@@ -1,5 +1,5 @@
 import concurrent.futures
-from particle_defect import ParticleDefect
+from defectTypes.particle_defect import ParticleDefect
 import reader
 
 class MultiProcessor():

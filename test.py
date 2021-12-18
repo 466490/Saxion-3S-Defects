@@ -1,4 +1,4 @@
-from particle_defect import ParticleDefect
+from defectTypes.particle_defect import ParticleDefect
 import reader
 
 baseImage = "../base_design_V4.svg"

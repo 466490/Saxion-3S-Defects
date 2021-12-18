@@ -1,7 +1,4 @@
-/output/csv
-/output/png
-/output/svg
-/output/temp
+output/*
 .vscode/
-/defectGeneration/__pycache__
-/defectGeneration/defectTypes/__pycache__
+__pycache__
+defectTypes/__pycache__

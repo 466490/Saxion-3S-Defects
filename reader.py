@@ -1,5 +1,5 @@
-from xml.dom.minidom import parse
 import os
+from xml.dom.minidom import parse
 from multiprocessing import Lock
 
 mutex = Lock()

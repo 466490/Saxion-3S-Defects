@@ -28,7 +28,7 @@
      <number>2</number>
     </property>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0">
+     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0">
       <item>
        <widget class="QLabel" name="label_3">
         <property name="text">
@@ -37,7 +37,7 @@
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="7,3">
+       <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0">
         <item>
          <widget class="QTextEdit" name="filename_input">
           <property name="sizePolicy">
@@ -87,6 +87,36 @@
          <size>
           <width>20</width>
           <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,6">
+        <item>
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Select defect input</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="KComboBox" name="kcombobox"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_7">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Minimum</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
          </size>
         </property>
        </spacer>
@@ -343,7 +373,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="1,6">
+         <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="1,1,5">
           <item>
            <widget class="QLabel" name="label_18">
             <property name="minimumSize">
@@ -378,7 +408,14 @@
              <bool>true</bool>
             </property>
             <property name="placeholderText">
-             <string>percentage between 0.0 and 100.0</string>
+             <string>0.0 to 100.0</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="horizontalSlider">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -806,6 +843,13 @@
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KComboBox</class>
+   <extends>QComboBox</extends>
+   <header>kcombobox.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>filename_input</tabstop>
   <tabstop>filename_browse</tabstop>

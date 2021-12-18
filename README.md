@@ -4,4 +4,4 @@ Packages required:
     - numpy
     - wand (python binding of ImageMagick)
     - svgpathtools
-    - PyQt5
+    - PyQt5 (or any QT5 binary)

@@ -1,7 +1,5 @@
-import math, time
-import shutil
+import math
 import random
-import os.path
 import numpy as np
 import svgpathtools as svgpt
 import wand.image
@@ -197,54 +195,6 @@ class ParticleDefect():
         for bbox in bboxes:
             xmlDoc.firstChild.appendChild(bbox)
         return xmlDoc.toxml(encoding="UTF-8")
-
-    def old_preview_image(self, mode, bbox):
-        out_dir="output/temp/"
-        out_filename = "temp_large_particle.svg"
-        #shutil.copyfile(self.srcImg, out_dir+out_filename)
-        #xmlDoc = parse(out_dir+out_filename)
-        xmlDoc = parse(self.srcImg)
-
-        if mode == "Fast":
-            # Add filters to the svg image
-            xmlDoc.firstChild.appendChild(self._create_xml_filter(xmlDoc))
-
-        for index in range(len(self.defects_bezier_segments)-1):
-            # Create the XML element as a <path> tag
-            defect_xml_element = xmlDoc.createElement("path")
-            defect_xml_element.setAttribute("filter", "url(#blur_filter)")
-            defect_xml_element.setAttribute("d", svgpt.Path(*self.defects_bezier_segments[index]).d())
-            defect_xml_element.setAttribute("style", "fill:black;fill-opacity:1;stroke:black;")
-
-            if bbox:
-                bbox_xml_element = xmlDoc.createElement("path")
-                bbox_xml_element.setAttribute("d", self.get_boundingbox(index).d())
-                bbox_xml_element.setAttribute("style", "fill:none;fill-opacity:1;stroke:red;stroke-width:2;")
-
-            if self.layer != "none":
-                # Find correct elements based on layer
-                for element in xmlDoc.getElementsByTagName("g"):
-                    if element.getAttribute("inkscape:label") == self.layer:
-                        element.appendChild(defect_xml_element)
-            else:
-                # Put defect on top of everything
-                xmlDoc.firstChild.appendChild(defect_xml_element)
-            if bbox:
-                xmlDoc.firstChild.appendChild(bbox_xml_element)
-        
-        if mode == "Accurate":
-            # Write the changed xml file to disk
-            with open(out_dir+out_filename, "w") as file:
-                file.write(xmlDoc.toxml())
-
-            with wand.image.Image(filename=out_dir+out_filename) as svgImg:
-                svgImg.save(filename=out_dir+out_filename.replace("svg", "png"))
-            return out_dir+out_filename.replace("svg", "png")
-        else:
-            # Write the changed xml file to disk
-            with open(out_dir+out_filename, "w") as file:
-                file.write(xmlDoc.toxml())
-            return out_dir+out_filename
 
     def _create_xml_filter(self, xmlDoc):
         # Create the filter element as a <filter>
