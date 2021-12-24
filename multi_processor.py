@@ -1,5 +1,5 @@
 import concurrent.futures
-from defectTypes.particle_defect import ParticleDefect
+from defectTypes.particle_defect import Defect
 import reader
 
 class MultiProcessor():
@@ -11,8 +11,9 @@ class MultiProcessor():
         self.csv_file = csv_file
     
     def gen_defect(self, type, config, png_dir):
-        defect = type(*config)
+        defect = type(**config)
         png_binary = defect.preview_image_png(bbox=False)
+        print("After")
         bbox_coords = defect.get_all_bbox_coords()
         width, height = defect.get_image_dimensions()
         available_filename = reader.find_available_filename(png_dir, defect.get_classname()+"%s.png")

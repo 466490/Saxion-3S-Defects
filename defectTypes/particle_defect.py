@@ -4,29 +4,50 @@ import numpy as np
 import svgpathtools as svgpt
 import wand.image
 from xml.dom.minidom import parse, parseString
+import reader
 
-class ParticleDefect():
-    def __init__(self, srcImg, area, 
+class Defect():
+    classname = "large_particle"
+    parameters = {"layer":{"display_name":"Layer","type":"layer"},
+                  "density_mean":{"display_name":"Density mean","type":"float","min":0,"max":10e6,"default":3.0},
+                  "density_stddev":{"display_name":"Density stddev","type":"float","min":0,"max":10e6,"default":1.0},
+                  "size_mean":{"display_name":"Size mean","type":"float","min":0,"max":10e6,"default":40.0},
+                  "size_stddev":{"display_name":"Size stddev","type":"float","min":0,"max":10e6,"default":8.0},
+                  "vertices":{"display_name":"Vertices","type":"int","min":0,"max":10e6,"default":18},
+                  "angle_variance":{"display_name":"Angle variance","type":"percentage", "default":30},
+                  "curviness":{"display_name":"Curviness","type":"percentage", "default":30},
+                  "blur":{"display_name":"Blur","type":"percentage", "default":30},
+                  "color":{"display_name":"Color","type":"color", "default":"#000000"}}
+    
+
+    def __init__(self, srcImg, 
                  density_mean, density_stddev,
                  size_mean, size_stddev,
                  vertices, angle_variance,
-                 curviness, blur, 
-                 layer="none", color="#000000"):
+                 curviness, blur, color,
+                 layer="none"):
         self.srcImg = srcImg
         self.layer = layer
         self.blur = blur/20
-        self.area = area
+        self.area = reader.get_area_of_layer(srcImg, layer)
         self.color = color
         
-        self.classname = "large_particle" # TODO fix
 
         self.defects_points = []
         self.defects_bezier_segments = []
 
-        amount_of_defects = self._calculate_amount_of_defects(density_mean, density_stddev, area[2], area[3])
+        amount_of_defects = self._calculate_amount_of_defects(density_mean, density_stddev, self.area[2], self.area[3])
         for d in range(amount_of_defects):
-            self._generate_defect(vertices, angle_variance, area, size_mean, size_stddev, curviness)
+            self._generate_defect(vertices, angle_variance, self.area, size_mean, size_stddev, curviness)
     
+    @classmethod
+    def get_classname(cls):
+        return cls.classname
+    
+    @classmethod
+    def get_parameters(cls):
+        return cls.parameters
+
     def _generate_defect(self, vertices, angle_variance, area, size_mean, size_stddev, curviness):
         # Calculate all the angles of the defect, this determines the amount of vertices
         angles = self._calculate_angles(vertices, angle_variance)
@@ -150,9 +171,6 @@ class ParticleDefect():
             bbox.append(self._get_boundingbox_coords(defect, offset_multiply, True))
         return bbox
 
-    def get_classname(self):
-        return self.classname
-
     def get_image_dimensions(self):
         return (self.area[2], self.area[3])
 
@@ -161,11 +179,12 @@ class ParticleDefect():
 
     def preview_image_png(self, bbox):
         with wand.image.Image(blob=self._get_image_as_binary("Accurate", bbox)) as img:
+            print("Before")
             return img.make_blob("png")
+
 
     def _get_image_as_binary(self, mode, bbox):
         xmlDoc = parse(self.srcImg)
-
         bboxes = []
         if mode == "Accurate":
             xmlDoc.firstChild.appendChild(self._create_xml_filter(xmlDoc))
@@ -175,7 +194,7 @@ class ParticleDefect():
             defect_xml_element = xmlDoc.createElement("path")
             defect_xml_element.setAttribute("filter", "url(#blur_filter)")
             defect_xml_element.setAttribute("d", svgpt.Path(*self.defects_bezier_segments[index]).d())
-            defect_xml_element.setAttribute("style", "fill:black;fill-opacity:1;stroke:black;")
+            defect_xml_element.setAttribute("style", "fill:"+self.color+";fill-opacity:1;stroke:"+self.color+";")
 
             if bbox:
                 bbox_xml_element = xmlDoc.createElement("path")

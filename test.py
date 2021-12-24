@@ -1,24 +1,27 @@
-from defectTypes.particle_defect import ParticleDefect
-import reader
+import os, sys
+import importlib, inspect
 
-baseImage = "../base_design_V4.svg"
+files = [f[:-3] for f in os.listdir("defectTypes") if f.endswith('.py') and f != '__init__.py']
+for file in files:
+    module = importlib.import_module("defectTypes."+file, ".")
+    for name, obj in inspect.getmembers(module):
+        if inspect.isclass(obj):
+            print(obj.get_classname())
 
-area = reader.get_area_of_layer(baseImage, "background")
-largeParticle = ParticleDefect(srcImg=baseImage, area=area, 
-                 density_mean=3, density_stddev=1,
-                 size_mean=40, size_stddev=10,
-                 vertices=18, angle_variance=20,
-                 curviness=30, blur=30, 
-                 layer="none")
 
-print(largeParticle.get_boundingbox())
-# generate svg file
-#largeParticle.output_to_svg()
+# baseImage = "../base_design_V4.svg"
 
-# store in csv file, it will always make sure to generate svg file first
-#largeParticle.output_to_csv()
+# area = reader.get_area_of_layer(baseImage, "background")
 
-# output to png image, it will always make sure to generate svg file first
-#largeParticle.output_to_png()
+# print(ParticleDefect.get_classname())
+
+# print(ParticleDefect(srcImg=baseImage, area=area,
+#                  density_mean=3, density_stddev=1,
+#                  size_mean=40, size_stddev=10,
+#                  vertices=18, angle_variance=20,
+#                  curviness=30, blur=30,
+#                  layer="none").get_classname())
+
+
 
 

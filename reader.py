@@ -2,7 +2,7 @@ import os
 from xml.dom.minidom import parse
 from multiprocessing import Lock
 
-mutex = Lock()
+mutex = Lock() 
 def find_available_filename(search_dir, filename):
     with mutex:
         #Runs in log(n) time where n is the number of existing files in sequence
@@ -33,7 +33,7 @@ def get_area_of_layer(file_path, layer):
     xmlDoc = parse(file_path)
 
     area = []
-    if layer == "none":
+    if layer == "none" or layer == "":
         area_str = xmlDoc.firstChild.getAttribute("viewBox")
         area += [float(area_part) for area_part in area_str.split()]
     else:
