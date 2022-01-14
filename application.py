@@ -546,7 +546,7 @@ class Ui_MainWindow(object):
 				self.shown_image.setPixmap(svg_img)
 			else:
 				png_img = QtGui.QPixmap()
-				png_img.loadFromData(defect.preview_image_png(self.toggle_bbox_button.isChecked()), "png")
+				png_img.loadFromData(defect.get_image_binary(self.toggle_bbox_button.isChecked()), "png")
 				self.shown_image.setPixmap(png_img)
 			self.clear_preview_button.setEnabled(True)
 

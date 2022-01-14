@@ -1,7 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from defectTypes.particle_defect import Defect
 from multi_processor import MultiProcessor
-import reader, time, os
+import reader, time, os, json
 import importlib, inspect
 
 
@@ -313,6 +312,9 @@ class Ui_MainWindow(object):
 		self.toggle_accuracy_button.clicked.connect(self.toggle_accuracy)
 		# Connect generate image button to function
 		self.generate_button.clicked.connect(self.generate_images)
+
+		self.preset_save.clicked.connect(self.save_preset)
+		self.preset_delete.clicked.connect(self.delete_preset)
 		
 		self.gen_1_button.clicked.connect(lambda: self.input_amount_gen(1))
 		self.gen_5_button.clicked.connect(lambda: self.input_amount_gen(5))
@@ -323,14 +325,22 @@ class Ui_MainWindow(object):
 		self.image_output_browse.clicked.connect(self.browse_output_dir)
 	
 	def find_all_defect_types(self):
-		files = [f[:-3] for f in os.listdir("defectTypes") if f.endswith('.py') and f != '__init__.py']
+		files = [f[:-3] for f in os.listdir("defectTypes") if f.endswith('.py') and f != 'baseclass.py']
 		self.defect_types = {}
 		for file in files:
 			module = importlib.import_module("defectTypes."+file, ".")
 			for name, obj in inspect.getmembers(module):
-				if inspect.isclass(obj):
+				if inspect.isclass(obj) and name != "BaseClass":
 					self.defect_types.update({obj.get_classname():obj})
 					self.defect_dropdown.addItem(obj.get_classname())
+		# Add presets
+		preset_files = [f for f in os.listdir("defectPresets") if f.endswith(".txt")]
+		for preset in  preset_files:
+			with open("defectPresets/" + preset, "r") as f:
+				file_contents = f.read()
+			dic = json.loads(file_contents)
+			self.defect_types.update({dic["inherits"] + " <- " + dic["classname"]: dic["inherits"]})
+			self.defect_dropdown.addItem(dic["inherits"] + " <- " + dic["classname"])
 
 	def clear_layout(self, layout):
 		while layout.count():
@@ -340,10 +350,33 @@ class Ui_MainWindow(object):
 			elif child.layout() is not None:
 				self.clear_layout(child.layout())
 
+	def save_preset(self):
+		preset = self.preset_input.text()
+		if preset != "":
+			parameters = self.get_parameters(withSrc=False)
+			with open("defectPresets/" + preset + ".txt", "w") as file:
+				file.write('{"classname":'+'"'+preset+'"')
+				file.write(',"inherits":'+'"'+self.current_defect_class+'"')
+				file.write(',"parameters":'+json.dumps(parameters)+'}')
+
+	def delete_preset(self):
+		pass
 
 	def selected_defect_type(self, text):
 		self.clear_layout(self.input_parameters_vlayout)
-		self.defect_parameters = self.defect_types[text].get_parameters()
+		if "<-" in text:
+			filename = text.split(" <- ")
+			with open("defectPresets/" + filename[-1] + ".txt", "r") as f:
+				file_contents = f.read()
+			dic = json.loads(file_contents)
+			preset_parameters = dic["parameters"]
+			self.current_defect_class = self.defect_types[filename[0]].get_classname()
+			self.defect_parameters = self.defect_types[filename[0]].get_parameters()
+			for key,value in preset_parameters.items():
+				self.defect_parameters[key]["default"] = value
+		else:
+			self.defect_parameters = self.defect_types[text].get_parameters()
+			self.current_defect_class = self.defect_types[text].get_classname()
 		for key,value in self.defect_parameters.items():
 			# Layout 
 			layout = QtWidgets.QHBoxLayout()
@@ -390,7 +423,7 @@ class Ui_MainWindow(object):
 				input_slider.setOrientation(QtCore.Qt.Horizontal)
 				input_slider.setMaximum(100)
 				input_slider.setObjectName("slider_"+key)
-				input_slider.setValue(value["default"])
+				input_slider.setValue(int(value["default"]))
 				
 				input.textChanged.connect(lambda input_slider=input_slider, input_label=input: self.update_slider_from_input(input_slider, input_label.text()))
 				input_slider.valueChanged.connect(lambda value, input_label=input: self.update_input_from_slider(input_label, value))
@@ -426,12 +459,15 @@ class Ui_MainWindow(object):
 				sizePolicy.setHeightForWidth(dropdown.sizePolicy().hasHeightForWidth())
 				dropdown.setSizePolicy(sizePolicy)
 				dropdown.setObjectName("para_dropdown_"+key)
+				if self.filename_input.toPlainText() != "":
+					layers = reader.get_layers(self.filename_input.toPlainText())
+					dropdown.clear()
+					dropdown.insertItems(0, layers)
 
 				layout.addWidget(label)
 				layout.addWidget(dropdown)
 				layout.setStretch(0, 1)
 				layout.setStretch(1, 6)
-				pass #lol
 			self.input_parameters_vlayout.addLayout(layout)
 		defect_type = self.defect_dropdown.currentText()
 		self.preset_input.setText(defect_type)
@@ -476,18 +512,21 @@ class Ui_MainWindow(object):
 				self.layer_dropdown = self.centralwidget.findChild(QtWidgets.QComboBox, "para_dropdown_layer")
 				self.layer_dropdown.clear()
 				self.layer_dropdown.insertItems(0, layers)
+	
+
 
 	def generate_preview(self):
-		defect_type = self.defect_dropdown.currentText() # TODO check for subclass with A <- n
+		defect_type = self.current_defect_class # TODO check for subclass with A <- n
 		parameters = self.get_parameters()
-		defect = self.defect_types[defect_type](**parameters)
+
+		mp = MultiProcessor(self.defect_types[defect_type], parameters)
 		if self.toggle_accuracy_button.text() == "Fast":
 			svg_img = QtGui.QPixmap()
-			svg_img.loadFromData(QtCore.QByteArray(defect.preview_image_svg(self.toggle_bbox_button.isChecked())), "svg")
+			svg_img.loadFromData(QtCore.QByteArray(mp.preview_defect("svg", self.toggle_bbox_button.isChecked())))
 			self.shown_image.setPixmap(svg_img)
 		else:
 			png_img = QtGui.QPixmap()
-			png_img.loadFromData(defect.preview_image_png(self.toggle_bbox_button.isChecked()), "png")
+			png_img.loadFromData(mp.preview_defect("png", self.toggle_bbox_button.isChecked()))
 			self.shown_image.setPixmap(png_img)
 		self.clear_preview_button.setEnabled(True)
 
@@ -502,12 +541,15 @@ class Ui_MainWindow(object):
 			self.progressBar.setValue(0)
 			self.file_progress.setText("0 / " + str(amount))
 
-			defect_type = self.defect_dropdown.currentText()
-			mp = MultiProcessor(self.defect_types[defect_type], parameters, amount, self.image_out_dir, csv_out_file)
-			
-			start_time = time.time()
-			mp.run(self.progressBar, self.file_progress)
-			end_time = time.time()
+			defect_type = self.current_defect_class
+			mp = MultiProcessor(self.defect_types[defect_type], parameters)
+			start_time = time.perf_counter()
+			mp.gen_defects(amount, 
+						   self.image_out_dir, 
+						   csv_out_file,
+						   self.progressBar, 
+						   self.file_progress)
+			end_time = time.perf_counter()
 			print(end_time - start_time)
 			print("Generation done")
 
@@ -527,15 +569,19 @@ class Ui_MainWindow(object):
 	def input_amount_gen(self, amount):
 		self.gen_manual_input.setText(str(amount))
 
-	def get_parameters(self):
+	def get_parameters(self, withSrc=True):
 		parameters = {}
-		# Always append srcImage
-		parameters.update({"srcImg":self.path_to_input_image})
+		if withSrc:
+			# Always append srcImage
+			parameters.update({"srcImg":self.path_to_input_image})
 		# Find all input QLineEdit parameters
 		for qlineEdit in self.centralwidget.findChildren(QtWidgets.QLineEdit):
 			if "para_input_" in qlineEdit.objectName():
 				parameter_name = qlineEdit.objectName().replace("para_input_","")
 				type = self.defect_parameters[parameter_name]["type"]
+				if qlineEdit.text() == "":
+					qlineEdit.setText("0")
+					# slider_
 				if type == "int":
 					parameters.update({parameter_name: int(qlineEdit.text())})
 				else:

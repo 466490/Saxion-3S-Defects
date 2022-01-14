@@ -190,12 +190,7 @@ class Ui_MainWindow(object):
 		self.verticalLayout_2.addWidget(self.label_8)
 		self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
 		self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-		self.image_path_input = QtWidgets.QPlainTextEdit(self.centralwidget)
-		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Ignored)
-		sizePolicy.setHorizontalStretch(0)
-		sizePolicy.setVerticalStretch(0)
-		sizePolicy.setHeightForWidth(self.image_path_input.sizePolicy().hasHeightForWidth())
-		self.image_path_input.setSizePolicy(sizePolicy)
+		self.image_path_input = QtWidgets.QLineEdit(self.centralwidget)
 		self.image_path_input.setReadOnly(True)
 		self.image_path_input.setObjectName("image_path_input")
 		self.horizontalLayout_6.addWidget(self.image_path_input)
@@ -267,8 +262,7 @@ class Ui_MainWindow(object):
 		MainWindow.setTabOrder(self.gen_10_button, self.gen_100_button)
 		MainWindow.setTabOrder(self.gen_100_button, self.gen_1000_button)
 		MainWindow.setTabOrder(self.gen_1000_button, self.generate_button)
-		MainWindow.setTabOrder(self.generate_button, self.image_path_input)
-		MainWindow.setTabOrder(self.image_path_input, self.image_output_browse)
+		MainWindow.setTabOrder(self.generate_button, self.image_output_browse)
 
 	def retranslateUi(self, MainWindow):
 		_translate = QtCore.QCoreApplication.translate
@@ -295,7 +289,7 @@ class Ui_MainWindow(object):
 		self.gen_manual_input.setPlaceholderText(_translate("MainWindow", "Enter custom amount to generate"))
 		self.generate_button.setText(_translate("MainWindow", "Generate"))
 		self.label_8.setText(_translate("MainWindow", "Output image file directory"))
-		self.image_path_input.setPlaceholderText(_translate("MainWindow", "Path to image output directory"))
+		self.image_path_input.setPlaceholderText(_translate("MainWindow", "Path to image directory"))
 		self.image_output_browse.setText(_translate("MainWindow", "Browse"))
 		self.label_4.setText(_translate("MainWindow", "Image generation progress"))
 		self.file_progress.setText(_translate("MainWindow", "0 / 0"))

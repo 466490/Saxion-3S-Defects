@@ -1,14 +1,8 @@
-import math
-import random
-import numpy as np
-import svgpathtools as svgpt
-import wand.image
-from xml.dom.minidom import parse, parseString
-import reader
+from abc import ABC, abstractmethod
 
-class Defect():
-    classname = "template"
-    parameters = {"layer":{"display_name":"Layer","type":"layer"},
+class BaseClass(ABC):
+    classname = "baseclass"
+    parameters = {"layer":{"display_name":"Layer","type":"layer", "default": "none"},
                   "density_mean":{"display_name":"Density mean","type":"float","min":0,"max":10e6,"default":3.0},
                   "angle_variance":{"display_name":"Angle variance","type":"percentage", "default":30},
                   "color":{"display_name":"Color","type":"color", "default":"#000000"}}
@@ -20,3 +14,15 @@ class Defect():
     @classmethod
     def get_parameters(cls):
         return cls.parameters
+
+    @abstractmethod
+    def get_image_dimensions(self):
+        pass
+
+    @abstractmethod
+    def get_image_binary(self, format, bbox):
+        pass
+
+    @abstractmethod
+    def get_all_bbox_coords(self):
+        pass

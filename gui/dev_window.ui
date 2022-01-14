@@ -396,18 +396,12 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="7,3">
         <item>
-         <widget class="QPlainTextEdit" name="image_path_input">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+         <widget class="QLineEdit" name="image_path_input">
           <property name="readOnly">
            <bool>true</bool>
           </property>
           <property name="placeholderText">
-           <string>Path to image output directory</string>
+           <string>Path to image directory</string>
           </property>
          </widget>
         </item>
@@ -537,7 +531,6 @@
   <tabstop>gen_100_button</tabstop>
   <tabstop>gen_1000_button</tabstop>
   <tabstop>generate_button</tabstop>
-  <tabstop>image_path_input</tabstop>
   <tabstop>image_output_browse</tabstop>
  </tabstops>
  <resources/>

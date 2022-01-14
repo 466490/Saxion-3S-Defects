@@ -1,0 +1,1 @@
+{"classname":"large_particle","inherits":"large_particle","parameters":{"density_mean": 5.0, "density_stddev": 1.0, "size_mean": 40.0, "size_stddev": 8.0, "vertices": 18, "angle_variance": 30.0, "curviness": 30.0, "blur": 30.0, "color": "#000000", "layer": ""}}

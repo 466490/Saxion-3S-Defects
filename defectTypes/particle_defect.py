@@ -4,11 +4,12 @@ import numpy as np
 import svgpathtools as svgpt
 import wand.image
 from xml.dom.minidom import parse, parseString
+from defectTypes.baseclass import BaseClass
 import reader
 
-class Defect():
+class Defect(BaseClass):
     classname = "large_particle"
-    parameters = {"layer":{"display_name":"Layer","type":"layer"},
+    parameters = {"layer":{"display_name":"Layer","type":"layer", "default": "none"},
                   "density_mean":{"display_name":"Density mean","type":"float","min":0,"max":10e6,"default":3.0},
                   "density_stddev":{"display_name":"Density stddev","type":"float","min":0,"max":10e6,"default":1.0},
                   "size_mean":{"display_name":"Size mean","type":"float","min":0,"max":10e6,"default":40.0},
@@ -39,14 +40,6 @@ class Defect():
         amount_of_defects = self._calculate_amount_of_defects(density_mean, density_stddev, self.area[2], self.area[3])
         for d in range(amount_of_defects):
             self._generate_defect(vertices, angle_variance, self.area, size_mean, size_stddev, curviness)
-    
-    @classmethod
-    def get_classname(cls):
-        return cls.classname
-    
-    @classmethod
-    def get_parameters(cls):
-        return cls.parameters
 
     def _generate_defect(self, vertices, angle_variance, area, size_mean, size_stddev, curviness):
         # Calculate all the angles of the defect, this determines the amount of vertices
@@ -128,7 +121,7 @@ class Defect():
             control_points_pairs.append((control_point1, control_point2))
         return control_points_pairs
     
-    def get_boundingbox(self, index):
+    def _get_svg_boundingbox(self, index):
         # Get the bbox coords of the defect
         x_min, y_min, x_max, y_max = self._get_boundingbox_coords(index)
         # Create all the bbox lines
@@ -165,21 +158,20 @@ class Defect():
         # Return the bbox coords with the offsets
         return (x_min-width_offset, y_min-height_offset, x_max+width_offset, y_max+height_offset)
 
-    def get_all_bbox_coords(self, offset_multiply=0.2):
+    def get_all_bbox_coords(self):
         bbox = []
         for defect in range(len(self.defects_points)):
-            bbox.append(self._get_boundingbox_coords(defect, offset_multiply, True))
+            bbox.append(self._get_boundingbox_coords(defect, 0.2, True))
         return bbox
 
     def get_image_dimensions(self):
         return (self.area[2], self.area[3])
 
-    def preview_image_svg(self, bbox):
-        return self._get_image_as_binary("Fast", bbox)
-
-    def preview_image_png(self, bbox):
-        with wand.image.Image(blob=self._get_image_as_binary("Accurate", bbox)) as img:
-            print("Before")
+    def get_image_binary(self, format, bbox):
+        if format == "svg":
+            return self._get_image_as_binary("Fast", bbox)
+        else:
+            img = wand.image.Image(blob=self._get_image_as_binary("Accurate", bbox))
             return img.make_blob("png")
 
 
@@ -198,7 +190,7 @@ class Defect():
 
             if bbox:
                 bbox_xml_element = xmlDoc.createElement("path")
-                bbox_xml_element.setAttribute("d", self.get_boundingbox(index).d())
+                bbox_xml_element.setAttribute("d", self._get_svg_boundingbox(index).d())
                 bbox_xml_element.setAttribute("style", "fill:none;fill-opacity:1;stroke:red;stroke-width:2;")
                 bboxes.append(bbox_xml_element)
 
