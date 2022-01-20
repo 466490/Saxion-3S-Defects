@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
 
 class BaseClass(ABC):
+    # Unique Identifier of the defect
     classname = "baseclass"
-    parameters = {"layer":{"display_name":"Layer","type":"layer", "default": "none"},
-                  "density_mean":{"display_name":"Density mean","type":"float","min":0,"max":10e6,"default":3.0},
-                  "angle_variance":{"display_name":"Angle variance","type":"percentage", "default":30},
-                  "color":{"display_name":"Color","type":"color", "default":"#000000"}}
-    
+    # Parameters for the user to interact with
+    parameters = {}
+
     @classmethod
     def get_classname(cls):
         return cls.classname
@@ -17,12 +16,18 @@ class BaseClass(ABC):
 
     @abstractmethod
     def get_image_dimensions(self):
+        # Return a tuple with the width and height of the source image 
         pass
 
     @abstractmethod
     def get_image_binary(self, format, bbox):
+        # Return the generated image in the format svg or png as binary 
         pass
 
     @abstractmethod
     def get_all_bbox_coords(self):
+        # Return a list with the coordinates of all 
+        # the bounding boxesaround all defects
         pass
+
+
