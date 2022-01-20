@@ -38,6 +38,8 @@ class Defect(BaseClass):
         self.defects_bezier_segments = []
 
         amount_of_defects = self._calculate_amount_of_defects(density_mean, density_stddev, self.area[2], self.area[3])
+        if amount_of_defects <= 0:
+            amount_of_defects = 1
         for d in range(amount_of_defects):
             self._generate_defect(vertices, angle_variance, self.area, size_mean, size_stddev, curviness)
 
@@ -92,9 +94,9 @@ class Defect(BaseClass):
         random_angle = np.exp(1j*random.uniform(0, 2*math.pi))
         return (0 if size < 0 else size) * random_angle + offset
 
-    def _calculate_next_point(self, distance_mean, distance_stddev, angle, previous_point, middle):
+    def _calculate_next_point(self, size_mean, size_stddev, angle, previous_point, middle):
         previous_angle = np.angle(previous_point-middle)
-        return np.random.normal(distance_mean, distance_stddev) * np.exp(1j*(np.radians(angle)+previous_angle)) + middle
+        return np.random.normal(size_mean, size_stddev) * np.exp(1j*(np.radians(angle)+previous_angle)) + middle
     
     def _generate_control_points_pairs(self, points, curviness):
         # Generate two control points for each vertice, the control points should be placed optimally  
@@ -113,6 +115,7 @@ class Defect(BaseClass):
             else:
                 control1_angle = average_angle - np.radians(90)
                 control2_angle = average_angle + np.radians(90)
+                
             cp1_distance = np.abs(points[index-1]-points[index])*(curviness/200)+0.00001
             cp2_distance = np.abs(points[index]-points[next])*(curviness/200)+0.00001
 
